@@ -12,7 +12,7 @@ import { addToCart } from '../slices/cartSlice';
 import { createGroupBuy, joinGroupBuy, fetchGroupBuys } from '../slices/groupBuySlice';
 import { showNotification } from '../slices/notificationSlice';
 import {ProgressBar} from'react-bootstrap';
-
+import { getProducts, createOrder } from '/api';
 const StyledButton = styled(Button)`
   margin-right: 10px;
 `;

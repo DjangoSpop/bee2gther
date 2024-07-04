@@ -1,5 +1,5 @@
 import io from 'socket.io-client';
-const SOCKET_URL = 'http://localhost:5000';
+const SOCKET_URL = 'http://localhost:5000/api/v1/';
 
 let socket;
 

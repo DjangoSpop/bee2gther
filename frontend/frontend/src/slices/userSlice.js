@@ -3,10 +3,10 @@ import axios from 'axios';
 
 
 export const registerUser = createAsyncThunk(
-  'user/register',
+  '/register',
   async (userData, { rejectWithValue }) => {
     try {
-      const { data } = await axios.post('/api/users', userData);
+      const { data } = await axios.post('/api/register', userData);
       localStorage.setItem('userInfo', JSON.stringify(data));
       return data;
     } catch (error) {
@@ -18,7 +18,7 @@ export const login = createAsyncThunk(
   'user/login',
   async ({ email, password }, { rejectWithValue }) => {
     try {
-      const { data } = await axios.post('/api/users/login', { email, password });
+      const { data } = await axios.post('/api/login', { email, password });
       localStorage.setItem('userInfo', JSON.stringify(data));
       return data;
     } catch (error) {

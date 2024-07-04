@@ -1,44 +1,49 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import * as productAPI from '../api/product';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Row, Col, Card, Button } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
+import { fetchProducts } from '../slices/productSlice';
+import Loader from './Loader';
+import Message from './Message';
 
-export const fetchProducts = createAsyncThunk(
-  'products/fetchProducts',
-  async (_, { dispatch }) => {
-    return new Promise((resolve) => {
-      productAPI.getProducts((data) => {
-        dispatch(setProducts(data));
-        resolve(data);
-      });
-    });
-  }
-);
+const ProductListing = () => {
+  const dispatch = useDispatch();
+  const { products, loading, error } = useSelector((state) => state.product);
 
-const productSlice = createSlice({
-  name: 'products',
-  initialState: {
-    items: [],
-    loading: false,
-    error: null,
-  },
-  reducers: {
-    setProducts: (state, action) => {
-      state.items = action.payload;
-    },
-  },
-  extraReducers: (builder) => {
-    builder
-      .addCase(fetchProducts.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(fetchProducts.fulfilled, (state) => {
-        state.loading = false;
-      })
-      .addCase(fetchProducts.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message;
-      });
-  },
-});
+  useEffect(() => {
+    dispatch(fetchProducts());
+  }, [dispatch]);
 
-export const { setProducts } = productSlice.actions;
-export default productSlice.reducer;
+  if (loading) return <Loader />;
+  if (error) return <Message variant="danger">{error}</Message>;
+
+  return (
+    <>
+      <h1>Latest Products</h1>
+      <Row>
+        {products.map((product) => (
+          <Col key={product.id} sm={12} md={6} lg={4} xl={3}>
+            <Card className="my-3 p-3 rounded">
+              <Link to={`/product/${product.id}`}>
+                <Card.Img src={product.image} variant="top" />
+              </Link>
+              <Card.Body>
+                <Link to={`/product/${product.id}`}>
+                  <Card.Title as="div">
+                    <strong>{product.name}</strong>
+                  </Card.Title>
+                </Link>
+                <Card.Text as="h3">${product.price}</Card.Text>
+                <Button variant="primary" as={Link} to={`/product/${product.id}`}>
+                  View Details
+                </Button>
+              </Card.Body>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+    </>
+  );
+};
+
+export default ProductListing;

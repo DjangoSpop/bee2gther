@@ -66,7 +66,7 @@ const Header = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5 }}
                 >
-                  Buy2gether
+                  BEE2GTHER
                 </LogoComponent>
               </Navbar.Brand>
             </LinkContainer>
@@ -102,11 +102,19 @@ const Header = () => {
               {userInfo ? (
                 <NavDropdown title={userInfo.name} id="username">
                   {LinkContainer ? (
-                    <LinkContainer to="/profile">
-                      <NavDropdown.Item>Profile</NavDropdown.Item>
-                    </LinkContainer>
+                    <>
+                      <LinkContainer to="/profile">
+                        <NavDropdown.Item>Profile</NavDropdown.Item>
+                      </LinkContainer>
+                      <LinkContainer to="/orders">
+                        <NavDropdown.Item>Orders</NavDropdown.Item>
+                      </LinkContainer>
+                    </>
                   ) : (
-                    <NavDropdown.Item as={Link} to="/profile">Profile</NavDropdown.Item>
+                    <>
+                      <NavDropdown.Item as={Link} to="/profile">Profile</NavDropdown.Item>
+                      <NavDropdown.Item as={Link} to="/orders">Orders</NavDropdown.Item>
+                    </>
                   )}
                   <NavDropdown.Item onClick={logoutHandler}>
                     Logout

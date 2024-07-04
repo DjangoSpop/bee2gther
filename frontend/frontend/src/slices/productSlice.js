@@ -1,17 +1,29 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-
-import *as productAPI from '../api/product';
+import { getProducts, createOrder} from '../api';
 
 export const fetchProducts = createAsyncThunk(
   'products/fetchProducts',
-  async (_, { dispatch }) => {
-    return new Promise((resolve) => {
-      productAPI.getProducts((data) => {
-        dispatch(setProducts(data));
-        resolve(data);
-      });
-    });
+ async(_,{ rejectWithValue}) => {
+  try {
+    const response = await getProducts;
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error.response.data);
+                  
+ }
+}
+);
+
+export const createNewOrder = createAsyncThunk(
+  'products/createNewOrder',
+  async(orderData, {rejectWithValue}) => {
+    try {
+      const response = await createOrder(orderData);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
   }
 );
 
@@ -24,16 +36,16 @@ export const fetchProductDetails = createAsyncThunk(
 );
 
 const productSlice = createSlice({
-  name: 'product',
+  name: 'products',
   initialState: {
-    products: [],
-    product: { reviews: [] },
+    items: [],
     loading: false,
     error: null,
+    orderSuccess: false,
   },
   reducers: {
-    setProducts: (state, action) => {
-      state.products = action.payload;
+    clearOrderSuccess: (state) => {
+      state.orderSuccess = false;
     },
   },
   extraReducers: (builder) => {
@@ -43,24 +55,17 @@ const productSlice = createSlice({
       })
       .addCase(fetchProducts.fulfilled, (state, action) => {
         state.loading = false;
-        state.products = action.payload;
+        state.items = action.payload;
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload;
       })
-      .addCase(fetchProductDetails.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(fetchProductDetails.fulfilled, (state, action) => {
-        state.loading = false;
-        state.product = action.payload;
-      })
-      .addCase(fetchProductDetails.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message;
+      .addCase(createNewOrder.fulfilled, (state) => {
+        state.orderSuccess = true;
       });
   },
 });
-export const {setProducts} = productSlice.actions;
+
+export const { clearOrderSuccess } = productSlice.actions;
 export default productSlice.reducer;

@@ -1,0 +1,32 @@
+{
+    "app": {
+      "name": "Buy2gether API",
+      "version": "1.0.0"
+    },
+    "server": {
+      "port": 5000
+    },
+    "database": {
+      "mongoURI": "mongodb://localhost:27017/buy2gether"
+    },
+    "jwt": {
+      "secret": "your_jwt_secret",
+      "expiresIn": "30d"
+    },
+    "email": {
+      "host": "smtp.mailtrap.io",
+      "port": 2525,
+      "auth": {
+        "user": "your_mailtrap_username",
+        "pass": "your_mailtrap_password"
+      },
+      "from": "noreply@buy2gether.com"
+    },
+    "redis": {
+      "host": "127.0.0.1",
+      "port": 6379
+    },
+    "websocket": {
+      "clientURL": "http://localhost:3000"
+    }
+  }

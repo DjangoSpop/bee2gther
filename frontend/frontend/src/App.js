@@ -8,7 +8,7 @@ import store from './store';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Notifications from './components/Notifications';
-import HomeScreen from './screens/HomeScreen';
+import ProductListing from './components/productlist';
 import ProductScreen from './screens/ProductScreen';
 import CartScreen from './screens/CartScreen';
 import LoginScreen from './screens/LoginScreen';
@@ -16,7 +16,10 @@ import RegisterScreen from './screens/RegisterScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import CheckoutScreen from './screens/CheckoutScreen';
 import AdminPanel from './components/AdminPanel';
-import SocketManager from './components/SocketManager';
+import WebSocketManager from './components/WebSocketManager';
+import ErrorBoundary from './components/ErrorBoundary';
+import SellerProductForm from './components/SellerProductForm';
+import OrdersScreen from './screens/OrdersScreen';
 
 const App = () => {
   return (
@@ -25,11 +28,11 @@ const App = () => {
         <ErrorBoundary>
           <div className="App" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             <Header />
-            <SocketManager />
+            <WebSocketManager />
             <main className="py-3" style={{ flex: 1 }}>
               <Container>
                 <Routes>
-                  <Route path="/" element={<HomeScreen />} />
+                  <Route path="/" element={<ProductListing />} />
                   <Route path="/product/:id" element={<ProductScreen />} />
                   <Route path="/cart" element={<CartScreen />} />
                   <Route path="/cart/:id" element={<CartScreen />} />
@@ -38,6 +41,8 @@ const App = () => {
                   <Route path="/profile" element={<ProfileScreen />} />
                   <Route path="/checkout" element={<CheckoutScreen />} />
                   <Route path="/admin" element={<AdminPanel />} />
+                  <Route path="/orders" element={<OrdersScreen />} />
+                  <Route path="/seller/add-product" element={<SellerProductForm />} />
                 </Routes>
               </Container>
             </main>
@@ -50,24 +55,5 @@ const App = () => {
     </Provider>
   );
 };
-
-class ErrorBoundary extends React.Component {
-  state = { hasError: false };
-
-  static getDerivedStateFromError(error) {
-    return { hasError: true };
-  }
-
-  componentDidCatch(error, errorInfo) {
-    console.error("Component Error:", error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return <div>Something went wrong.</div>;
-    }
-    return this.props.children;
-  }
-}
 
 export default App;
