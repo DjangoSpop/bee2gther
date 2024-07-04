@@ -1,18 +1,18 @@
+// src/screens/ProductScreen.js
 import React, { useEffect, useState, useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Row, Col, Image, ListGroup, Card, Button, Form } from 'react-bootstrap';
+import { Row, Col, Image, ListGroup, Card, Button, Form, ProgressBar } from 'react-bootstrap';
 import { motion, AnimatePresence } from 'framer-motion';
 import styled from 'styled-components';
 import Rating from '../components/Rating';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
-import { fetchProductDetails } from '../slices/productSlice';
-import { addToCart } from '../slices/cartSlice';
-import { createGroupBuy, joinGroupBuy, fetchGroupBuys } from '../slices/groupBuySlice';
-import { showNotification } from '../slices/notificationSlice';
-import {ProgressBar} from'react-bootstrap';
-import { getProducts, createOrder } from '../api';
+import { fetchProductDetails } from '../actions/productActions';
+import { addToCart } from '../actions/cartActions';
+import { createGroupBuy, joinGroupBuy, fetchGroupBuys } from '../actions/groupBuyActions';
+import { showNotification } from '../actions/notificationActions';
+
 const StyledButton = styled(Button)`
   margin-right: 10px;
 `;
@@ -20,7 +20,7 @@ const StyledButton = styled(Button)`
 const PriceTag = styled.span`
   font-size: 1.2rem;
   font-weight: bold;
-  color: ${props => props.discounted ? '#28a745' : '#000'};
+  color: ${(props) => (props.discounted ? '#28a745' : '#000')};
 `;
 
 const DiscountBadge = styled.span`
@@ -35,10 +35,10 @@ const DiscountBadge = styled.span`
 const GroupBuyCard = styled(Card)`
   margin-bottom: 15px;
   transition: all 0.3s ease;
-  
+
   &:hover {
     transform: translateY(-5px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
 `;
 
@@ -47,13 +47,14 @@ const ProductScreen = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
 
-  const productDetails = useSelector((state) => state.product);
-  const { loading, error, product } = productDetails;
+  const productState = useSelector((state) => state.products);
+  const { loading, error, product } = productState || {};
 
-  const groupBuyState = useSelector((state) => state.groupBuy);
-  const { groupBuys, loading: groupBuyLoading } = groupBuyState;
+  const groupBuyState = useSelector((state) => state.groupBuys);
+  const { groupBuys, loading: groupBuyLoading } = groupBuyState || {};
 
-  const { userInfo } = useSelector((state) => state.user);
+  const userState = useSelector((state) => state.user);
+  const { userInfo } = userState || {};
 
   useEffect(() => {
     dispatch(fetchProductDetails(id));
@@ -70,26 +71,31 @@ const ProductScreen = () => {
       dispatch(showNotification({ message: 'Please log in to start a group buy', type: 'info' }));
       return;
     }
-    dispatch(createGroupBuy({
-      productId: product._id,
-      requiredParticipants: 5,
-      discountPercentage: 20,
-    }));
+    dispatch(
+      createGroupBuy({
+        productId: product._id,
+        requiredParticipants: 5,
+        discountPercentage: 20,
+      })
+    );
   };
 
-  const joinGroupBuyHandler = useCallback((groupBuyId) => {
-    if (!userInfo) {
-      dispatch(showNotification({ message: 'Please log in to join a group buy', type: 'info' }));
-      return;
-    }
-    dispatch(joinGroupBuy({ groupBuyId, userId: userInfo._id }))
-      .then(() => {
-        dispatch(showNotification({ message: 'Successfully joined group buy', type: 'success' }));
-      })
-      .catch((error) => {
-        dispatch(showNotification({ message: error.message, type: 'error' }));
-      });
-  }, [dispatch, userInfo]);
+  const joinGroupBuyHandler = useCallback(
+    (groupBuyId) => {
+      if (!userInfo) {
+        dispatch(showNotification({ message: 'Please log in to join a group buy', type: 'info' }));
+        return;
+      }
+      dispatch(joinGroupBuy({ groupBuyId, userId: userInfo._id }))
+        .then(() => {
+          dispatch(showNotification({ message: 'Successfully joined group buy', type: 'success' }));
+        })
+        .catch((error) => {
+          dispatch(showNotification({ message: error.message, type: 'error' }));
+        });
+    },
+    [dispatch, userInfo]
+  );
 
   const calculateDiscountedPrice = (price, discount) => {
     return (price * (100 - discount) / 100).toFixed(2);
@@ -99,7 +105,9 @@ const ProductScreen = () => {
   if (error) return <Message variant="danger">{error}</Message>;
   if (!product) return null;
 
-  const activeGroupBuys = groupBuys.filter(gb => gb.product._id === product._id && gb.currentParticipants < gb.requiredParticipants);
+  const activeGroupBuys = groupBuys.filter(
+    (gb) => gb.product._id === product._id && gb.currentParticipants < gb.requiredParticipants
+  );
 
   return (
     <motion.div
@@ -142,9 +150,7 @@ const ProductScreen = () => {
               <ListGroup.Item>
                 <Row>
                   <Col>Status:</Col>
-                  <Col>
-                    {product.countInStock > 0 ? 'In Stock' : 'Out Of Stock'}
-                  </Col>
+                  <Col>{product.countInStock > 0 ? 'In Stock' : 'Out Of Stock'}</Col>
                 </Row>
               </ListGroup.Item>
               {product.countInStock > 0 && (
@@ -193,7 +199,7 @@ const ProductScreen = () => {
         <Col>
           <h2>Active Group Buys</h2>
           <AnimatePresence>
-            {activeGroupBuys.map(groupBuy => (
+            {activeGroupBuys.map((groupBuy) => (
               <motion.div
                 key={groupBuy._id}
                 initial={{ opacity: 0, y: 50 }}
@@ -213,12 +219,12 @@ const ProductScreen = () => {
                     <Card.Text>
                       Participants: {groupBuy.currentParticipants} / {groupBuy.requiredParticipants}
                     </Card.Text>
-                    <ProgressBar 
-                      now={(groupBuy.currentParticipants / groupBuy.requiredParticipants) * 100} 
+                    <ProgressBar
+                      now={(groupBuy.currentParticipants / groupBuy.requiredParticipants) * 100}
                       label={`${Math.round((groupBuy.currentParticipants / groupBuy.requiredParticipants) * 100)}%`}
                     />
-                    <Button 
-                      onClick={() => joinGroupBuyHandler(groupBuy._id)} 
+                    <Button
+                      onClick={() => joinGroupBuyHandler(groupBuy._id)}
                       disabled={groupBuy.currentParticipants >= groupBuy.requiredParticipants}
                       className="mt-3"
                       variant="outline-success"
