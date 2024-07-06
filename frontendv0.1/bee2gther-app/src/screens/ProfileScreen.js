@@ -1,4 +1,3 @@
-// src/screens/ProfileScreen.js
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Form, Button, Row, Col } from 'react-bootstrap';
@@ -31,46 +30,60 @@ const ProfileScreen = () => {
     dispatch(updateUserProfile({ email, role, is_seller: isSeller }));
   };
 
+  // Helper function to safely render error messages
+  const renderErrorMessage = (error) => {
+    if (typeof error === 'string') return error;
+    if (error && typeof error === 'object') {
+      if (error.message) return error.message;
+      if (error.detail) return error.detail;
+      return JSON.stringify(error);
+    }
+    return 'An unknown error occurred';
+  };
+
   return (
     <Row>
       <Col md={6} className="mx-auto">
         <h1>User Profile</h1>
-        {error && <Message variant="danger">{error}</Message>}
+        {error && <Message variant="danger">{renderErrorMessage(error)}</Message>}
         {success && <Message variant="success">Profile Updated</Message>}
-        {loading && <Loader />}
-        <Form onSubmit={submitHandler}>
-          <Form.Group controlId="email">
-            <Form.Label>Email Address</Form.Label>
-            <Form.Control
-              type="email"
-              placeholder="Enter email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </Form.Group>
-          <Form.Group controlId="role">
-            <Form.Label>Role</Form.Label>
-            <Form.Control
-              as="select"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-            >
-              <option value="customer">Customer</option>
-              <option value="seller">Seller</option>
-            </Form.Control>
-          </Form.Group>
-          <Form.Group controlId="isSeller" className="mt-3">
-            <Form.Check
-              type="checkbox"
-              label="Register as Seller"
-              checked={isSeller}
-              onChange={(e) => setIsSeller(e.target.checked)}
-            />
-          </Form.Group>
-          <Button type="submit" variant="primary" className="mt-3">
-            Update Profile
-          </Button>
-        </Form>
+        {loading ? (
+          <Loader />
+        ) : (
+          <Form onSubmit={submitHandler}>
+            <Form.Group controlId="email">
+              <Form.Label>Email Address</Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="Enter email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group controlId="role">
+              <Form.Label>Role</Form.Label>
+              <Form.Control
+                as="select"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+              >
+                <option value="customer">Customer</option>
+                <option value="seller">Seller</option>
+              </Form.Control>
+            </Form.Group>
+            <Form.Group controlId="isSeller" className="mt-3">
+              <Form.Check
+                type="checkbox"
+                label="Register as Seller"
+                checked={isSeller}
+                onChange={(e) => setIsSeller(e.target.checked)}
+              />
+            </Form.Group>
+            <Button type="submit" variant="primary" className="mt-3">
+              Update Profile
+            </Button>
+          </Form>
+        )}
       </Col>
     </Row>
   );

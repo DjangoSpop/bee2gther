@@ -12,6 +12,6 @@ export const logout = createAsyncThunk('auth/logout', async () => {
 });
 
 export const register = createAsyncThunk('auth/register', async (userData) => {
-  const { data } = await api.post('/users/register/', userData);
+  const { data } = await api.post('users/register/', userData);
   return data;
 });

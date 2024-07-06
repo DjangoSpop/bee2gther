@@ -1,47 +1,50 @@
-// src/reducers/cartReducer.js
-import { createSlice } from '@reduxjs/toolkit';
-import { addToCart, removeFromCart, fetchCart } from './actions/cartActions';
+import {
+  GET_CART_ITEMS,
+  ADD_TO_CART,
+  REMOVE_ITEM_FROM_CART,
+  UPDATE_CART_ITEM_QUANTITY,
+  CLEAR_CART,
+} from './cartActions';
 
-const cartSlice = createSlice({
-  name: 'cart',
-  initialState: { items: [], loading: false, error: null },
-  reducers: {},
-  extraReducers: (builder) => {
-    builder
-      .addCase(addToCart.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(addToCart.fulfilled, (state, action) => {
-        state.loading = false;
-        state.items = action.payload;
-      })
-      .addCase(addToCart.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-      .addCase(removeFromCart.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(removeFromCart.fulfilled, (state, action) => {
-        state.loading = false;
-        state.items = state.items.filter((item) => item._id !== action.payload._id);
-      })
-      .addCase(removeFromCart.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-      .addCase(fetchCart.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(fetchCart.fulfilled, (state, action) => {
-        state.loading = false;
-        state.items = action.payload;
-      })
-      .addCase(fetchCart.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      });
-  },
-});
+const initialState = {
+  items: [],
+  loading: false,
+  error: null,
+};
 
-export default cartSlice.reducer;
+const cartReducer = (state = initialState, action) => {
+  switch (action.type) {
+      case GET_CART_ITEMS:
+          return {
+              ...state,
+              items: action.payload,
+              loading: false,
+          };
+      case ADD_TO_CART:
+          return {
+              ...state,
+              items: [...state.items, action.payload],
+          };
+      case REMOVE_ITEM_FROM_CART:
+          return {
+              ...state,
+              items: state.items.filter(item => item.id !== action.payload),
+          };
+      case UPDATE_CART_ITEM_QUANTITY:
+          return {
+              ...state,
+              items: state.items.map(item =>
+                  item.id === action.payload.id ? action.payload : item
+              ),
+          };
+      case CLEAR_CART:
+          return {
+              ...state,
+              items: [],
+          };
+      default:
+          return state;
+  }
+};
+
+export default cartReducer;

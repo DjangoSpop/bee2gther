@@ -6,6 +6,7 @@ import productReducer from './reducers/productReducer';
 import orderReducer from './reducers/orderReducer';
 import groupBuyReducer from './reducers/groupBuyReducer';
 import notificationReducer from './reducers/notificationReducer';
+import cartReducer from './reducers/cartReducer';
 
 const store = configureStore({
   reducer: {
@@ -15,6 +16,7 @@ const store = configureStore({
     orders: orderReducer,
     groupBuys: groupBuyReducer,
     notification: notificationReducer,
+    cart: cartReducer
   },
 });
 
