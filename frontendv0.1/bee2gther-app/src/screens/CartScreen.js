@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { addToCart, fetchCarts, removeFromCart } from '../actions/cartActions';
+import { addToCart, getCartItems, removeFromCart } from '../actions/cartsActions';
 import Message from '../components/Message';
 import { Button, ListGroup, Row, Col, Image, Form } from 'react-bootstrap';
 
@@ -16,7 +16,7 @@ const CartScreen = () => {
     if (id) {
       dispatch(addToCart(id, 1));
     }
-    dispatch(fetchCarts());
+    dispatch(getCartItems());
   }, [dispatch, id]);
 
   const removeFromCartHandler = (id) => {

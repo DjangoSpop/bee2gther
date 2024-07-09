@@ -9,10 +9,9 @@ import Rating from '../components/Rating';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 import { fetchProductDetails } from '../actions/productActions';
-import { addToCart } from '../actions/cartActions';
 import { createGroupBuy, joinGroupBuy, fetchGroupBuys } from '../actions/groupBuyActions';
 import { showNotification } from '../actions/notificationActions';
-import { addItemToCart } from '../reducers/cartReducer';
+import {addToCart } from '../actions/cartsActions.js';
 const StyledButton = styled(Button)`
   margin-right: 10px;
 `;
@@ -63,7 +62,6 @@ const ProductScreen = () => {
 
   const addToCartHandler = () => {
     dispatch(addToCart({ ...product, qty }));
-    dispatch(addItemToCart({ productId: id, qty }));
     dispatch(showNotification({ message: 'Product added to cart', type: 'success' }));
   };
 

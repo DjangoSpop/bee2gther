@@ -95,7 +95,9 @@ const RegisterScreen = () => {
               type="checkbox"
               label="Register as Seller"
               checked={isSeller}
-              onChange={(e) => setIsSeller(e.target.checked)}
+              onChange={(e) => setIsSeller(e.target.checked)
+                
+              }
             />
           </Form.Group>
           <Button type="submit" variant="primary" className="mt-3">
